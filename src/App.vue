@@ -18,64 +18,86 @@
 <script>
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-//引入leaflet
+
 export default {
   name: 'App',
   data() {
     return {
-      map: null
+      map: null,
+      defaultStyle: {
+        color: '#3388ff',
+        weight: 1,
+        opacity: 1,
+        fillColor: '#87CEEB',
+        fillOpacity: 0.6
+      },
+      hoverStyle: {
+        color: '#ff7700',     // 悬浮边界颜色
+        weight: 3,            // 边界加粗
+        fillColor: '#ffa64d', // 悬浮填充颜色更亮
+        fillOpacity: 0.9,     // 更“浮起”
+        zIndex: 9999
+      }
     };
   },
   methods: {
-    //翻页函数
     scrollToNextSection() {
       const contentSection = document.querySelector('.content-section');
-      if (contentSection) {
-        contentSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      contentSection?.scrollIntoView({ behavior: 'smooth' });
     },
-    initMap() {
-      //默认没加底图
-      this.map = L.map('map-section',{zoomControl:false}).setView([114.000,30.000], 4);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  opacity: 0.05, // 5% 透明度，几乎看不到
-  attribution: ''
-}).addTo(this.map);
 
-      //使用fetch方法加载文件,若使用import加载需要更改config.js
-      fetch('/china.geojson') 
+    initMap() {
+      this.map = L.map('map-section', {
+        zoomControl: false,
+        inertia: true,
+        zoomAnimation: true,
+        fadeAnimation: true
+      });
+
+      // 微透明底图(防止拖动时出现空白)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        opacity: 0.03,
+        attribution: ''
+      }).addTo(this.map);
+
+      fetch('/china.geojson')
         .then(res => res.json())
         .then(data => {
-          const mapLayer = L.geoJSON(data, {
-            renderer: L.canvas(),
-            style: {
-              color: '#3388ff',
-              weight: 1,
-              opacity: 1,
-              fillColor: '#87CEEB',
-              fillOpacity: 0.6
-            }
-          }).addTo(this.map);
-          this.map.fitBounds(mapLayer.getBounds());
-          mapLayer.on('click', (e) => {
-  const layer = e.layer;
-  this.map.flyToBounds(layer.getBounds(), {
-    padding: [50, 50],
-    duration: 1.5
-  });
-});
+          const layer = L.geoJSON(data, {
+  renderer: L.svg(), // ✅改成 SVG 渲染
+  style: this.defaultStyle,
+  onEachFeature: (feature, layer) => {
+    layer.on({
+      mouseover: (e) => {
+        const l = e.target;
+        l.setStyle(this.hoverStyle);
+        l.bringToFront(); // ✅SVG 才有效
+        l._path.style.filter = 'drop-shadow(0 0 6px rgba(255,136,0,0.9))'; // ✅发光悬浮效果
+      },
+      mouseout: (e) => {
+        const l = e.target;
+        l.setStyle(this.defaultStyle);
+        l._path.style.filter = 'none';
+      }
+    });
+  }
+}).addTo(this.map);
 
+
+          // ✅ 初始视图更大
+          const bounds = layer.getBounds();
+          this.map.fitBounds(bounds.pad(-0.2));
         })
-        .catch(err => {
-          console.error('GeoJSON 加载失败:', err);
-        });
+        .catch(err => console.error('GeoJSON 加载失败:', err));
     }
   },
+
   mounted() {
     this.initMap();
   }
-}
+};
 </script>
+
 
 <style>
 * {
