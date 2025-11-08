@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
@@ -7,9 +7,36 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
 
-  <title>
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
+  <!-- 外部资源CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+
+  <!-- 本地字体 -->
+  <link href="<%= BASE_URL %>HYYanRuiMinKaiShuS.ttf" rel="stylesheet">
+
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2E8B57',
+            secondary: '#5F9EA0',
+            accent: '#8FBC8F',
+            light: '#F5F5DC',
+            dark: '#2F4F4F'
+          },
+          fontFamily: {
+            song: ['SimSun', 'serif'],
+            hei: ['SimHei', 'Ma Shan Zheng', 'sans-serif']
+          },
+        }
+      }
+    }
+  </script>
+
+  <title>山河图志</title>
 </head>
 
 <body>
@@ -17,7 +44,9 @@
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
         Please enable it to continue.</strong>
   </noscript>
-  <div id="app"></div>
+  <div id="app">
+
+  </div>
   <!-- built files will be auto injected -->
 </body>
 
