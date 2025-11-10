@@ -5,7 +5,7 @@
         <div >
           <router-link class="item" to="/" >首页</router-link>
           <router-link class="item" to="/RouteView" >山河漫游</router-link>
-          <router-link class="item" to="/Challenge" >过关闯将</router-link>
+          <router-link class="item" to="#" >过关闯将</router-link>
           <router-link class="item" to="#">云锦书来</router-link>
         </div>
     </div>
@@ -105,6 +105,15 @@ import { useRouter } from 'vue-router'
 let chart = null
 const router = useRouter()
 
+// const pointStyle = { // 红点样式
+//   symbolSize: 8,
+//   itemStyle: { color: 'red' }
+// };
+// const lineStyle = { // 黄线样式
+//   color: 'yellow',
+//   width: 2,
+//   type: 'solid'
+// };
 
 onMounted(async () => {
   // 初始化地图
@@ -124,45 +133,228 @@ onMounted(async () => {
 
   echarts.registerMap('china', chinaGeo)
 
-  const option = {
+  // 加载本地路线JSON文件（假设文件存放在public/routes目录下）
+  //const routeFiles = ['1.json', '2.json', '3.json','4.json'] // 替换为实际文件名
+  const route1 = await fetch('/routes/1.json').then(res => res.json())
+  const route2 = await fetch('/routes/2.json').then(res => res.json())
+  const route3 = await fetch('/routes/3.json').then(res => res.json())
+  const route4 = await fetch('/routes/4.json').then(res => res.json())
+    // 线路1：红色（点+线）
+    const seriesRoute1 = [
+    // 线路1的点
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      id: 'scatter_route1', // 唯一标识
+      data: route1.coordinates.map((coord, i) => ({
+        name: `线路1_点${i+1}`,
+        value: coord,
+        symbolSize: 8,
+        itemStyle: { color: 'red' }
+      })),
+      zlevel: 5
+    },
+    // 线路1的线
+    {
+      type: 'lines',
+      coordinateSystem: 'geo',
+      id: 'lines_route1', // 唯一标识
+      polyline: true,
+      data: [{ coords: route1.coordinates }],
+      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
+      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'red' },
+      zlevel: 4
+    }
+  ]
+
+  // 线路2：
+  const seriesRoute2 = [
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      id: 'scatter_route2',
+      data: route2.coordinates.map((coord, i) => ({
+        name: `线路2_点${i+1}`,
+        value: coord,
+        symbolSize: 8,
+        itemStyle: { color: 'red' }
+      })),
+      zlevel: 5
+    },
+    {
+      type: 'lines',
+      coordinateSystem: 'geo',
+      id: 'lines_route2',
+      polyline: true,
+      data: [{ coords: route2.coordinates }],
+      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
+      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'green' },
+      zlevel: 4
+    }
+  ]
+
+  // 线路3：
+  const seriesRoute3 = [
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      id: 'scatter_route3',
+      data: route3.coordinates.map((coord, i) => ({
+        name: `线路3_点${i+1}`,
+        value: coord,
+        symbolSize: 8,
+        itemStyle: { color: 'red' }
+      })),
+      zlevel: 5
+    },
+    {
+      type: 'lines',
+      coordinateSystem: 'geo',
+      id: 'lines_route3',
+      polyline: true,
+      data: [{ coords: route3.coordinates }],
+      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
+      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'blue' },
+      zlevel: 4
+    }
+  ]
+
+  // 线路4：
+  const seriesRoute4 = [
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      id: 'scatter_route4',
+      data: route4.coordinates.map((coord, i) => ({
+        name: `线路4_点${i+1}`,
+        value: coord,
+        symbolSize: 8,
+        itemStyle: { color: 'red' }
+      })),
+      zlevel: 5
+    },
+    {
+      type: 'lines',
+      coordinateSystem: 'geo',
+      id: 'lines_route4',
+      polyline: true,
+      data: [{ coords: route4.coordinates }],
+      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
+      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'purple' },
+      zlevel: 4
+    }
+  ]
+//  const seriesList = [];
+//   // 遍历4条路线，每条路线生成独立的点和线
+// routeDataList.forEach((route, routeIndex) => {
+//   const coords = route.coordinates;
+//   // 获取当前线路的专属样式
+//   point: pointStyle; 
+//   line: lineStyle;
+
+//   // 1. 当前线路的点（scatter系列）
+//   if (coords.length > 0) {
+//     seriesList.push({
+//       type: 'scatter',
+//       coordinateSystem: 'geo',
+//       data: coords.map((coord, pointIndex) => ({
+//         name: `路线${routeIndex+1}_点${pointIndex+1}`,
+//         value: coord,
+//         ...currentPointStyle  // 应用当前线路的点样式
+//       })),
+//       zlevel: 5,
+//       id: `scatter_route_${routeIndex}`
+//     });
+//   }
+
+//   // 2. 当前线路的线段（lines系列）
+//   if (coords.length >= 2) {
+//     seriesList.push({
+//       type: 'lines',
+//       coordinateSystem: 'geo',
+//       polyline: true,
+//       lineStyle: currentLineStyle,  // 应用当前线路的线样式
+//       data: [{ coords: coords }],
+//       zlevel: 4,
+//       effect: {
+//         show: true,
+//         constantSpeed: 10,
+//         trailLength: 0.3,
+//         color: currentLineStyle.color  // 流动效果颜色与线条一致
+//       },
+//       id: `lines_route_${routeIndex}`
+//     });
+//   }
+// });
+
+// // 处理路线数据为ECharts格式
+// const linesData = routeDataList.map(route => ({
+//   coords: route.coordinates  // 直接使用整个坐标数组作为一条线的所有点
+// }));
+  // const linesData = [
+  //   { coords: route1.coordinates },
+  //   { coords: route2.coordinates },
+  //   { coords: route3.coordinates },
+  //   { coords: route4.coordinates }
+  // ];
+  // 地图配置（纯2D，与原有保持一致）
+    const option = {
     backgroundColor: '#0e1a2b',
-    series: [
-      {
-        type: 'map3D',
-        map: 'china',
-        regionHeight: 3,
-        roam: true,
-        itemStyle: {
-          color: '#0c5da5',
-          borderColor: '#6cf',
-          borderWidth: 0.5,
-          opacity: 1,
-        },
-        emphasis: {
-          label: { show: true, color: '#fff' },
-          itemStyle: { color: '#ffcb60' },
-        },
-        light: {
-          main: { intensity: 1.2, shadow: true, alpha: 40, beta: -30 },
-          ambient: { intensity: 0.3 },
-        },
-        viewControl: {
-          distance: 90,
-          alpha: 85,
-          beta: 0,
-          zoomSensitivity: 0.5,
-          panSensitivity: 0.5,
-          rotateSensitivity: 0.5,
-        },
+    // 2D地图坐标系
+    geo: {
+      map: 'china',
+      roam: false, // 支持缩放平移
+      label: {
+        show: true,
+        color: '#000'
       },
-    ],
+      itemStyle: {
+        //color: '#0c5da5',//blue
+        color: '#fff',
+        borderColor: '#6cf',
+        borderWidth: 0.5,
+        opacity: 1,
+      },
+      emphasis: {
+        label: { show: true, color: '#fff' },
+        itemStyle: { color: '#ffcb60' },
+      },
+    },
+    series: [
+      // 2D路线图层
+      {
+        type: 'lines', // 2D线路组件
+        coordinateSystem: 'geo', // 绑定2D坐标系
+        effect: {
+          show: true,
+          constantSpeed: 10,
+          trailLength: 0.3,
+          color: 'white'
+        },
+        // lineStyle: lineStyle,
+        // data: linesData
+      },
+      ...seriesRoute1,
+      ...seriesRoute2,
+      ...seriesRoute3,
+      ...seriesRoute4
+    ]
   }
 
   chart.setOption(option)
 
-  // 点击跳转省份详情页
+  // 点击跳转路线/省份详情页
   chart.on('click', params => {
-    if (params.name) {
+    // 检查是否是线路相关的点击（点或线）
+    const routeMatch = params.seriesId?.match(/route(\d+)/)
+    
+    if (routeMatch) {
+      // 线路点击 - 提取线路编号并跳转
+      const routeId = routeMatch[1]
+      console.log('点击了线路：', routeId)
+      router.push(`/RouteView?route=${routeId}`)
+    } else if (params.name) {
+      // 省份点击 - 原有逻辑
       console.log('点击了省份：', params.name)
       router.push(`/province/${params.name}`)
     }
