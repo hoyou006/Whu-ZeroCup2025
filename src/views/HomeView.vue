@@ -5,7 +5,7 @@
         <div >
           <router-link class="item" to="/" >首页</router-link>
           <router-link class="item" to="/RouteView" >山河漫游</router-link>
-          <router-link class="item" to="#" >过关闯将</router-link>
+          <router-link class="item" to="/Challenge" >过关闯将</router-link>
           <router-link class="item" to="#">云锦书来</router-link>
         </div>
     </div>
