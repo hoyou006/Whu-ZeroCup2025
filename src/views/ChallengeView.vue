@@ -41,7 +41,7 @@
           <!-- 选项 -->
           <div class="grid gap-3">
             <button
-              v-for="(opt,i) in current.options"
+              v-for="(opt,i) in current.optionsArray"
               :key="i"
               @click="choose(i)"
               class="text-left w-full rounded-xl border p-4 hover:shadow transition"
@@ -118,7 +118,7 @@ const answers = ref([])        // 记录选择
 const score = ref(0)
 
 const current = computed(() => picked.value[index.value] || {})
-const progressPct = computed(() => Math.round(((index.value)/total) * 100))
+const progressPct = computed(() => Math.round(((index.value + 1) / total) * 100))
 
 const optionLabel = (i) => ['A','B','C','D'][i]
 
@@ -127,13 +127,25 @@ async function loadQuestions () {
   try {
     const resp = await fetch('/src/data/geo_questions_zh_CN.json') // 放到 src/data 下更易于版本管理
     const data = await resp.json()
-    allQuestions.value = data
+    // 规范化：把 options 对象转换为数组，并计算 answerIndex（0-3）
+    allQuestions.value = data.map(q => {
+      const optionsArray = Array.isArray(q.options) ? q.options : Object.values(q.options || {})
+      const answerLetter = (q.answer || '').toString()
+      const answerIndex = ['A','B','C','D'].indexOf(answerLetter)
+      return { ...q, optionsArray, answerIndex }
+    })
     stage.value = 'ready'
   } catch (e) {
     // Vite/CLI 构建路径差异：若上面失败，可退回到 public 目录读取
     try {
       const resp = await fetch('/geo_questions_zh_CN.json')
-      allQuestions.value = await resp.json()
+      const data = await resp.json()
+      allQuestions.value = data.map(q => {
+        const optionsArray = Array.isArray(q.options) ? q.options : Object.values(q.options || {})
+        const answerLetter = (q.answer || '').toString()
+        const answerIndex = ['A','B','C','D'].indexOf(answerLetter)
+        return { ...q, optionsArray, answerIndex }
+      })
       stage.value = 'ready'
     } catch (err) {
       console.error('题库加载失败', err)
