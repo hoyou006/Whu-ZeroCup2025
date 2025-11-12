@@ -132,23 +132,10 @@
 </template>
 
 <style>
-/* 定义字体 */
-@font-face {
-  font-family: 'MyFont';
-  src: url('/public/HYYanRuiMinKaiShuS.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap; /* 优化字体加载显示 */
-}
-
-.province-container {
-  min-height: 100vh;
+.container{
+  width: 100vw;
+  height: 60vh;
   background-color: #F4EAC5;
-}
-
-.slide_container{
-  width: 100%;
-  height: 75vh;
 }
 
 .box{

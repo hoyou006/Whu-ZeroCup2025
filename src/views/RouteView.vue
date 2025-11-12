@@ -1,9 +1,5 @@
 <template>
   <div class="route-container">
-    <!-- 导航栏 -->
-    <NavBar></NavBar>
-
-
 
     <!-- 页面标题 -->
     <header class="page-header">
@@ -330,8 +326,8 @@ onBeforeUnmount(() => {
   --primary: #2E8B57;
   --secondary: #5F9EA0;
   --accent: #8FBC8F;
-  --light: #F5F5DC;
-  --dark: #2F4F4F;
+  --light: #206864;
+  --dark: #206864;
   --white: #FFFFFF;
   --black: #000000;
   --gray-700: #374151;
@@ -339,10 +335,10 @@ onBeforeUnmount(() => {
   --gray-400: #9CA3AF;
 }
 
-/* 字体设置 */
+/* 容器样式 */
 .route-container {
   font-family: 'SimHei', 'sans-serif';
-  background-color: var(--light);
+  background-color: #206864;
   overflow-x: hidden;
 }
 
@@ -440,7 +436,7 @@ onBeforeUnmount(() => {
   padding-top: 128px;
   padding-bottom: 64px;
   text-align: center;
-  background: linear-gradient(to bottom, var(--dark), var(--primary));
+  background-color: #206864;
 }
 
 .header-content {
@@ -465,7 +461,7 @@ onBeforeUnmount(() => {
 /* 路线导航样式 */
 .route-navigation {
   padding: 48px 0;
-  background-color: var(--white);
+  background-color: #206864;
 }
 
 .route-buttons {
@@ -511,7 +507,7 @@ onBeforeUnmount(() => {
 /* 地图展示区样式 */
 .map-section {
   padding: 64px 0;
-  background-color: var(--light);
+  background-color: #206864;
   position: relative;
   overflow: hidden;
 }
@@ -535,7 +531,7 @@ onBeforeUnmount(() => {
 }
 
 .map-box {
-  background-color: var(--white);
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -551,7 +547,7 @@ onBeforeUnmount(() => {
 }
 
 .detail-box {
-  background-color: var(--white);
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -560,7 +556,7 @@ onBeforeUnmount(() => {
 .route-title {
   font-size: 28px;
   font-weight: bold;
-  color: var(--dark);
+  color: var(--white);
   margin-bottom: 24px;
   display: flex;
   align-items: center;
@@ -624,13 +620,13 @@ onBeforeUnmount(() => {
 
 .city-name {
   font-weight: bold;
-  color: var(--dark);
+  color: var(--white);
   margin-bottom: 4px;
 }
 
 .city-desc {
   font-size: 14px;
-  color: var(--gray-600);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* 动画效果 */
