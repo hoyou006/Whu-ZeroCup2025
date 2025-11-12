@@ -1,14 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 导航栏 -->
-    <div  id="navbar">
-        <div >
-          <router-link class="item" to="/" >首页</router-link>
-          <router-link class="item" to="/RouteView" >山河漫游</router-link>
-          <router-link class="item" to="/Challenge" >过关闯将</router-link>
-          <router-link class="item" to="#">云锦书来</router-link>
-        </div>
-    </div>
+    <NavBar></NavBar>
 
     <!-- 视频背景 -->
     <section class="relative h-screen w-full overflow-hidden">
@@ -101,6 +94,7 @@ import * as echarts from 'echarts'
 import 'echarts-gl'
 import { onMounted, onBeforeUnmount} from 'vue'
 import { useRouter } from 'vue-router'
+import NavBar from '@/component/NavBar.vue'
 
 let chart = null
 const router = useRouter()

@@ -1,0 +1,19 @@
+{
+    "北京": [
+        {
+            "img": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200",
+            "title": "天安门",
+            "description": "天安门是中国的首都，是一个城市圈。"
+        },
+        {
+            "img": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200",
+            "title": "颐和园",
+            "description": "颐和园是中国的一个城市圈，是一个著名的旅游景点。"
+        },
+        {
+            "img": "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=1200",
+            "title": "北京故宫",
+            "description": "北京故宫是中国的一个城市圈，是一个著名的旅游景点。"
+        }
+    ]
+}

@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-light text-dark">
-    <!-- 顶部栏（与站点风格一致，可嵌入你的全局导航组件） -->
+  <div class="min-h-screen" style="background-color: #F4EAC5; color: #333;">
+    <!-- 顶部栏 -->
     <header class="w-full bg-white/80 backdrop-blur sticky top-0 z-10 border-b">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <h1 class="text-xl font-bold tracking-wider" style="color:#2E8B57">国家地理知识挑战</h1>
+        <h1 class="text-xl font-bold tracking-wider" style="color:#549688">国家地理知识挑战</h1>
         <div class="text-sm text-gray-500">过关闯将 · 趣味问答</div>
       </div>
     </header>
@@ -30,7 +30,7 @@
           <div class="h-2 rounded-full transition-all"
                :style="{ width: progressPct + '%', backgroundColor: theme.primary }"></div>
         </div>
-        <div class="text-right text-sm text-gray-600">{{ index+1 }}/{{ total }}</div>
+        <div class="text-right text-sm text-gray-600">{{ index }}/{{ total }}</div>
 
         <!-- 题干 -->
         <div class="bg-white rounded-2xl shadow p-6">
@@ -104,8 +104,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-// 主题色（与首页一致：index.html 的 Tailwind 扩展）:contentReference[oaicite:0]{index=0}
-const theme = { primary: '#2E8B57' }
+// 主题色
+const theme = { primary: '#549688' }
 
 const stage = ref('loading')   // 'loading' | 'ready' | 'playing' | 'result'
 const allQuestions = ref([])   // 全量题库(100)
@@ -118,14 +118,14 @@ const answers = ref([])        // 记录选择
 const score = ref(0)
 
 const current = computed(() => picked.value[index.value] || {})
-const progressPct = computed(() => Math.round(((index.value + 1) / total) * 100))
+const progressPct = computed(() => Math.round(((index.value ) / total) * 100))
 
 const optionLabel = (i) => ['A','B','C','D'][i]
 
 // 从本地文件加载题库
 async function loadQuestions () {
   try {
-    const resp = await fetch('/src/data/geo_questions_zh_CN.json') // 放到 src/data 下更易于版本管理
+    const resp = await fetch('/geo_questions_zh_CN.json') // 放到 src/data 下更易于版本管理
     const data = await resp.json()
     // 规范化：把 options 对象转换为数组，并计算 answerIndex（0-3）
     allQuestions.value = data.map(q => {
@@ -136,21 +136,8 @@ async function loadQuestions () {
     })
     stage.value = 'ready'
   } catch (e) {
-    // Vite/CLI 构建路径差异：若上面失败，可退回到 public 目录读取
-    try {
-      const resp = await fetch('/geo_questions_zh_CN.json')
-      const data = await resp.json()
-      allQuestions.value = data.map(q => {
-        const optionsArray = Array.isArray(q.options) ? q.options : Object.values(q.options || {})
-        const answerLetter = (q.answer || '').toString()
-        const answerIndex = ['A','B','C','D'].indexOf(answerLetter)
-        return { ...q, optionsArray, answerIndex }
-      })
-      stage.value = 'ready'
-    } catch (err) {
-      console.error('题库加载失败', err)
+      console.error('题库加载失败', e)
       alert('题库加载失败，请确认文件路径。')
-    }
   }
 }
 
@@ -200,11 +187,11 @@ onMounted(loadQuestions)
 </script>
 
 <style scoped>
-/* 轻量加载动画（与全站 style.css 动画一致风格）:contentReference[oaicite:1]{index=1}*/
+/* 轻量加载动画 */
 .loader {
   width: 40px; height: 40px;
   border: 4px solid #e5e7eb; /* gray-200 */
-  border-top: 4px solid #2E8B57;
+  border-top: 4px solid #549688;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 12px auto 0;

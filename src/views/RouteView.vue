@@ -1,28 +1,9 @@
 <template>
   <div class="route-container">
     <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="navbar-content">
-        <div class="nav-links">
-          <router-link to="/" class="nav-link">首页</router-link>
-          <router-link to="/" class="nav-link active">山河漫游</router-link>
-          <router-link to="#" class="nav-link">过关闯将</router-link>
-          <router-link to="#" class="nav-link">云锦书来</router-link>
-        </div>
-        <button class="menu-btn" id="menuBtn">
-          <i class="fa fa-bars"></i>
-        </button>
-      </div>
-      <!-- 移动端菜单 -->
-      <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-content">
-          <router-link to="/" class="mobile-nav-link">首页</router-link>
-          <router-link to="/" class="mobile-nav-link active">山河漫游</router-link>
-          <router-link to="#" class="mobile-nav-link">过关闯将</router-link>
-          <router-link to="#" class="mobile-nav-link">云锦书来</router-link>
-        </div>
-      </div>
-    </nav>
+    <NavBar></NavBar>
+
+
 
     <!-- 页面标题 -->
     <header class="page-header">
@@ -275,6 +256,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
+import NavBar from '@/component/NavBar.vue'
 // import { useRouter } from 'vue-router'
 
 // const router = useRouter()
