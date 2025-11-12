@@ -1,0 +1,156 @@
+/* 中式风格答题页面 - 补充字体和全局样式 */
+
+/* 导入书法字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
+
+/* 定义中文书法字体栈 */
+:root {
+  --font-serif: 'SimSun', 'STZhongsong', 'Noto Serif SC', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* 颜色变量 */
+  --primary-color: #6BA8A8;      /* 玉绿色 */
+  --accent-color: #7EB3B3;       /* 浅玉绿 */
+  --secondary-color: #5A9FB5;    /* 湖蓝色 */
+  --light-color: #F5F5F5;        /* 白色/浅灰 */
+  --gray-color: #D4D4D4;         /* 浅灰色 */
+  --text-primary: #333333;       /* 文本深灰 */
+  --text-secondary: #999999;     /* 文本浅灰 */
+  --success-color: #6BA8A8;      /* 成功绿 */
+  --error-color: #D4999A;        /* 错误红 */
+}
+
+/* 全局字体设置 */
+html, body {
+  font-family: var(--font-sans);
+  font-feature-settings: 'kern' 1;
+}
+
+/* 标题使用书法字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+}
+
+/* 水墨效果 - 用于背景装饰 */
+.ink-brush-stroke {
+  position: relative;
+  overflow: hidden;
+}
+
+.ink-brush-stroke::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/></filter></defs><rect width="100" height="100" fill="white" filter="url(%23noise)" opacity="0.03"/></svg>') repeat;
+  pointer-events: none;
+}
+
+/* 渐变文本效果 */
+.gradient-text {
+  background: linear-gradient(135deg, #6BA8A8, #7EB3B3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 过度效果 */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 禁用不必要的过度 */
+button, input, select, textarea {
+  transition: all 0.3s ease;
+}
+
+/* 光晕效果 */
+.glow-effect {
+  box-shadow: 0 0 20px rgba(107, 168, 168, 0.2);
+}
+
+.glow-effect:hover {
+  box-shadow: 0 0 30px rgba(107, 168, 168, 0.3);
+}
+
+/* 水纹纹理 */
+.water-texture {
+  background-image: 
+    linear-gradient(90deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent),
+    linear-gradient(0deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  background-color: rgba(107, 168, 168, 0.02);
+}
+
+/* 响应式容器 */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 按钮通用样式 */
+button {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* 文本选择样式 */
+::selection {
+  background-color: rgba(107, 168, 168, 0.2);
+  color: #333;
+}
+
+::-moz-selection {
+  background-color: rgba(107, 168, 168, 0.2);
+  color: #333;
+}
+
+/* 焦点样式 */
+:focus {
+  outline: 2px solid #6BA8A8;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6BA8A8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7EB3B3;
+}
+
+/* 打印样式 */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .no-print {
+    display: none;
+  }
+}
