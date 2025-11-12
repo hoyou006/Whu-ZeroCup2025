@@ -39,29 +39,25 @@
           </h2>
 
           <!-- 选项 -->
-          <div class="grid gap-3">
-            <button
-              v-for="(opt,i) in current.optionsArray"
-              :key="i"
-              @click="choose(i)"
-              class="text-left w-full rounded-xl border p-4 hover:shadow transition"
-              :class="[
-                'focus:outline-none',
-                selectedIndex===i ? 'ring-2' : '',
-              ]"
-              :style="selectedIndex===i ? {borderColor: theme.primary, boxShadow:'0 0 0 2px '+theme.primary+'33'} : {}"
-            >
-              <span class="font-medium">{{ optionLabel(i) }}.</span>
-              <span class="ml-2">{{ opt }}</span>
-            </button>
-          </div>
+        <div class="grid gap-3">
+          <button
+            v-for="(opt,i) in current.optionsArray"
+            :key="i"
+            @click="choose(i)"
+            class="text-left w-full rounded-xl border p-4 hover:shadow transition focus:outline-none"
+            :class="getOptionClass(i)"
+          >
+            <span class="font-medium">{{ optionLabel(i) }}.</span>
+            <span class="ml-2">{{ opt }}</span>
+          </button>
+        </div>
 
           <!-- 下一题 -->
           <div class="mt-6 flex justify-end">
             <button
               @click="next"
               class="px-5 py-2 rounded-full text-white disabled:opacity-50"
-              :disabled="selectedIndex===null"
+              :disabled="!isAnswered"
               :style="{backgroundColor: theme.primary}"
             >
               {{ index === total-1 ? '提交结果' : '下一题' }}
@@ -116,11 +112,30 @@ const index = ref(0)
 const selectedIndex = ref(null)
 const answers = ref([])        // 记录选择
 const score = ref(0)
+const isAnswered = ref(false)  // 标记当前题目是否已回答
 
 const current = computed(() => picked.value[index.value] || {})
 const progressPct = computed(() => Math.round(((index.value ) / total) * 100))
 
 const optionLabel = (i) => ['A','B','C','D'][i]
+
+// 计算选项样式类
+const getOptionClass = (i) => {
+  // 当题目未回答时，不添加特殊样式
+  if (!isAnswered.value) return ''
+  
+  // 正确选项
+  if (i === picked.value[index.value]?.answerIndex) {
+    return 'bg-green-100 border-green-300'
+  }
+  
+  // 错误选项且是用户选择的
+  if (selectedIndex.value === i && i !== picked.value[index.value]?.answerIndex) {
+    return 'bg-red-100 border-red-300'
+  }
+  
+  return ''
+}
 
 // 从本地文件加载题库
 async function loadQuestions () {
@@ -150,25 +165,35 @@ function startGame () {
   answers.value = Array(total).fill(null)
   selectedIndex.value = null
   score.value = 0
+  isAnswered.value = false
   stage.value = 'playing'
 }
 
 function choose (i) {
+  if (isAnswered.value) return // 如果已经回答过，不允许再次选择
+  
+  // 标记选择
   selectedIndex.value = i
+  answers.value[index.value] = i
+  
+  // 立即判断对错并计分
+  const currentQuestion = picked.value[index.value]
+  if (currentQuestion && i === currentQuestion.answerIndex) {
+    score.value++
+  }
+  
+  // 直接设置已回答状态
+  isAnswered.value = true
 }
 
 function next () {
-  if (selectedIndex.value === null) return
-  answers.value[index.value] = selectedIndex.value
-
-  // 计分
-  const correct = picked.value[index.value].answerIndex
-  if (selectedIndex.value === correct) score.value++
-
+  if (!isAnswered.value) return // 如果还没回答，不允许进入下一题
+  
   // 下一题 or 结果
   if (index.value < total - 1) {
     index.value++
     selectedIndex.value = null
+    isAnswered.value = false
   } else {
     stage.value = 'result'
   }
