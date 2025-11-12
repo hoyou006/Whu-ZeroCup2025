@@ -252,6 +252,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
+import NavBar from '@/component/NavBar.vue'
 // import { useRouter } from 'vue-router'
 
 // const router = useRouter()
