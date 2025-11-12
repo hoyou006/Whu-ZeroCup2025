@@ -1,18 +1,49 @@
 <template>
   <div class="app-container">
-    <!-- 导航栏 -->
-    <NavBar></NavBar>
 
-    <!-- 视频背景 -->
-    <section class="relative h-screen w-full overflow-hidden">
-      <!-- 背景图片 -->
-      <div class="absolute inset-0 bg-black/30 z-10"></div>
-      <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://picsum.photos/id/10/1920/1080');"></div>
+    <!-- 视频背景 - 可滚动扩大的区域 -->
+    <section class="relative w-full h-screen overflow-hidden" ref="heroSection">
+      <!-- 背景图片层 -->
+      <div class="absolute inset-0 z-0 w-full h-full bg-cover bg-center" id="backgroundImage" style="background-image: url(/img/homePage/bgHome.jpg)"></div>
+      
+      <!-- 前景视频层 -->
+      <div class="absolute inset-0 z-10 flex items-center justify-center">
+        <div class="relative w-[60vw] h-[40vh] max-w-[800px] max-h-[450px] transition-all duration-1000 ease-out" id="videoContainer">
+          <video 
+            id="heroVideo"
+            class="w-full h-full object-cover rounded-lg"
+            autoplay 
+            muted 
+            loop 
+            playsinline
+            preload="metadata"
+            @error="handleVideoError"
+          >
+            <!-- 视频源 - 实际项目中需要替换为真实的视频文件 -->
+            <source src="/assets/videos/immersive_water.mp4" type="video/mp4">
+            <!-- 备用视频格式 -->
+            <source src="/assets/videos/immersive_water.webm" type="video/webm">
+            <!-- 浏览器不支持视频标签时的降级显示 -->
+            <div class="absolute inset-0 bg-cover bg-center rounded-lg" style="background-image: url(https://picsum.photos/id/15/800/450)"></div>
+          </video>
+          
+          <!-- 视频加载占位符 -->
+          <div id="videoPlaceholder" class="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+            <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </div>
+      </div>
 
-      <!-- 文字介绍 -->
-      <div class="absolute inset-0 z-20 flex flex-col justify-end items-center text-center px-4 pb-32">
-        <div class="mb-6 opacity-0 transform translate-y-10 transition-all duration-1000" id="mainTitle">
-          <img src="/img/shanhetuzhi.png" alt="山河图志" class="max-w-full h-auto max-h-[clamp(3rem,10vw,6rem)] object-contain">
+      <!-- 文字介绍 - 居中显示 -->
+      <div class="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4">
+        <div class="mb-10 transform translate-y-10 opacity-0" id="mainTitle">
+          <h2 style="font-family: 'SimSun', '宋体', 'STSong', 'NSimSun', serif; font-weight: bold; font-size: clamp(2rem,8vw,3.5rem); color: white; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); letter-spacing: 0.1em; line-height: 1.2;">山河图志</h2>
+        </div>
+        
+        <!-- 副标题 -->
+        <div class="transform translate-y-10 opacity-0" id="subtitle">
+          <p class="text-white text-[clamp(0.9rem,2vw,1.1rem)]">Natural Journey</p>
+          <p class="text-white/80 text-sm">Rivers and Mountains in Verse</p>
         </div>
       </div>
       
@@ -109,20 +140,18 @@ import * as echarts from 'echarts'
 import 'echarts-gl'
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import NavBar from '@/component/NavBar.vue'
+import { gsap } from 'gsap'
 
 let chart = null
 const router = useRouter()
 
-// const pointStyle = { // 红点样式
-//   symbolSize: 8,
-//   itemStyle: { color: 'red' }
-// };
-// const lineStyle = { // 黄线样式
-//   color: 'yellow',
-//   width: 2,
-//   type: 'solid'
-// };
+// 动画控制器
+const animationController = ref({
+  isExpanded: false,
+  isScrolling: false,
+  progress: 0,
+  timeline: null
+})
 
 // 元素引用
 const heroSection = ref(null)
@@ -185,214 +214,54 @@ const initEntryAnimation = () => {
   return tl
 }
 
-  echarts.registerMap('china', chinaGeo)
-
-  // 加载本地路线JSON文件（假设文件存放在public/routes目录下）
-  //const routeFiles = ['1.json', '2.json', '3.json','4.json'] // 替换为实际文件名
-  const route1 = await fetch('/routes/1.json').then(res => res.json())
-  const route2 = await fetch('/routes/2.json').then(res => res.json())
-  const route3 = await fetch('/routes/3.json').then(res => res.json())
-  const route4 = await fetch('/routes/4.json').then(res => res.json())
-    // 线路1：红色（点+线）
-    const seriesRoute1 = [
-    // 线路1的点
-    {
-      type: 'scatter',
-      coordinateSystem: 'geo',
-      id: 'scatter_route1', // 唯一标识
-      data: route1.coordinates.map((coord, i) => ({
-        name: `线路1_点${i+1}`,
-        value: coord,
-        symbolSize: 8,
-        itemStyle: { color: 'red' }
-      })),
-      zlevel: 5
-    },
-    // 线路1的线
-    {
-      type: 'lines',
-      coordinateSystem: 'geo',
-      id: 'lines_route1', // 唯一标识
-      polyline: true,
-      data: [{ coords: route1.coordinates }],
-      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
-      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'red' },
-      zlevel: 4
-    }
-  ]
-
-  // 线路2：
-  const seriesRoute2 = [
-    {
-      type: 'scatter',
-      coordinateSystem: 'geo',
-      id: 'scatter_route2',
-      data: route2.coordinates.map((coord, i) => ({
-        name: `线路2_点${i+1}`,
-        value: coord,
-        symbolSize: 8,
-        itemStyle: { color: 'red' }
-      })),
-      zlevel: 5
-    },
-    {
-      type: 'lines',
-      coordinateSystem: 'geo',
-      id: 'lines_route2',
-      polyline: true,
-      data: [{ coords: route2.coordinates }],
-      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
-      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'green' },
-      zlevel: 4
-    }
-  ]
-
-  // 线路3：
-  const seriesRoute3 = [
-    {
-      type: 'scatter',
-      coordinateSystem: 'geo',
-      id: 'scatter_route3',
-      data: route3.coordinates.map((coord, i) => ({
-        name: `线路3_点${i+1}`,
-        value: coord,
-        symbolSize: 8,
-        itemStyle: { color: 'red' }
-      })),
-      zlevel: 5
-    },
-    {
-      type: 'lines',
-      coordinateSystem: 'geo',
-      id: 'lines_route3',
-      polyline: true,
-      data: [{ coords: route3.coordinates }],
-      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
-      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'blue' },
-      zlevel: 4
-    }
-  ]
-
-  // 线路4：
-  const seriesRoute4 = [
-    {
-      type: 'scatter',
-      coordinateSystem: 'geo',
-      id: 'scatter_route4',
-      data: route4.coordinates.map((coord, i) => ({
-        name: `线路4_点${i+1}`,
-        value: coord,
-        symbolSize: 8,
-        itemStyle: { color: 'red' }
-      })),
-      zlevel: 5
-    },
-    {
-      type: 'lines',
-      coordinateSystem: 'geo',
-      id: 'lines_route4',
-      polyline: true,
-      data: [{ coords: route4.coordinates }],
-      lineStyle: { color: 'yellow', width: 2, type: 'solid' },
-      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'purple' },
-      zlevel: 4
-    }
-  ]
-//  const seriesList = [];
-//   // 遍历4条路线，每条路线生成独立的点和线
-// routeDataList.forEach((route, routeIndex) => {
-//   const coords = route.coordinates;
-//   // 获取当前线路的专属样式
-//   point: pointStyle; 
-//   line: lineStyle;
-
-//   // 1. 当前线路的点（scatter系列）
-//   if (coords.length > 0) {
-//     seriesList.push({
-//       type: 'scatter',
-//       coordinateSystem: 'geo',
-//       data: coords.map((coord, pointIndex) => ({
-//         name: `路线${routeIndex+1}_点${pointIndex+1}`,
-//         value: coord,
-//         ...currentPointStyle  // 应用当前线路的点样式
-//       })),
-//       zlevel: 5,
-//       id: `scatter_route_${routeIndex}`
-//     });
-//   }
-
-//   // 2. 当前线路的线段（lines系列）
-//   if (coords.length >= 2) {
-//     seriesList.push({
-//       type: 'lines',
-//       coordinateSystem: 'geo',
-//       polyline: true,
-//       lineStyle: currentLineStyle,  // 应用当前线路的线样式
-//       data: [{ coords: coords }],
-//       zlevel: 4,
-//       effect: {
-//         show: true,
-//         constantSpeed: 10,
-//         trailLength: 0.3,
-//         color: currentLineStyle.color  // 流动效果颜色与线条一致
-//       },
-//       id: `lines_route_${routeIndex}`
-//     });
-//   }
-// });
-
-// // 处理路线数据为ECharts格式
-// const linesData = routeDataList.map(route => ({
-//   coords: route.coordinates  // 直接使用整个坐标数组作为一条线的所有点
-// }));
-  // const linesData = [
-  //   { coords: route1.coordinates },
-  //   { coords: route2.coordinates },
-  //   { coords: route3.coordinates },
-  //   { coords: route4.coordinates }
-  // ];
-  // 地图配置（纯2D，与原有保持一致）
-    const option = {
-    backgroundColor: '#0e1a2b',
-    // 2D地图坐标系
-    geo: {
-      map: 'china',
-      roam: false, // 支持缩放平移
-      label: {
-        show: true,
-        color: '#000'
-      },
-      itemStyle: {
-        //color: '#0c5da5',//blue
-        color: '#fff',
-        borderColor: '#6cf',
-        borderWidth: 0.5,
-        opacity: 1,
-      },
-      emphasis: {
-        label: { show: true, color: '#fff' },
-        itemStyle: { color: '#ffcb60' },
-      },
-    },
-    series: [
-      // 2D路线图层
-      {
-        type: 'lines', // 2D线路组件
-        coordinateSystem: 'geo', // 绑定2D坐标系
-        effect: {
-          show: true,
-          constantSpeed: 10,
-          trailLength: 0.3,
-          color: 'white'
-        },
-        // lineStyle: lineStyle,
-        // data: linesData
-      },
-      ...seriesRoute1,
-      ...seriesRoute2,
-      ...seriesRoute3,
-      ...seriesRoute4
-    ]
+// 处理滚动动画 - 使用GSAP实现流畅过渡
+const handleScrollAnimation = (progress) => {
+  // 确保进度值在0-1之间
+  const clampedProgress = Math.min(Math.max(progress, 0), 1)
+  animationController.value.progress = clampedProgress
+  
+  // 视频容器展开动画
+  const videoContainer = document.getElementById('videoContainer')
+  if (videoContainer) {
+    gsap.to(videoContainer, {
+      width: clampedProgress >= 1 ? '100vw' : '60vw',
+      height: clampedProgress >= 1 ? '100vh' : '40vh',
+      borderRadius: clampedProgress >= 1 ? 0 : '0.5rem',
+      duration: 0.5,
+      ease: clampedProgress >= 1 ? 'power2.out' : 'power2.in'
+    })
+  }
+  
+  // 文字动画 - 根据滚动进度向两侧移动
+  const textMoveDistance = clampedProgress * 100
+  const mainTitle = document.getElementById('mainTitle')
+  if (mainTitle) {
+    gsap.to(mainTitle, {
+      x: textMoveDistance,
+      opacity: 1 - clampedProgress,
+      duration: 0.5,
+      ease: clampedProgress >= 1 ? 'power2.out' : 'power2.in'
+    })
+  }
+  
+  const subtitle = document.getElementById('subtitle')
+  if (subtitle) {
+    gsap.to(subtitle, {
+      x: -textMoveDistance,
+      opacity: 1 - clampedProgress,
+      duration: 0.5,
+      ease: clampedProgress >= 1 ? 'power2.out' : 'power2.in'
+    })
+  }
+  
+  // 背景图片缩放动画
+  const backgroundImage = document.getElementById('backgroundImage')
+  if (backgroundImage) {
+    gsap.to(backgroundImage, {
+      scale: 1 + clampedProgress * 0.3,
+      duration: 0.5,
+      ease: 'power2.out'
+    })
   }
   
   // 滚动指示器淡出
@@ -431,22 +300,12 @@ const handleWheel = (e) => {
   }
 }
 
-  // 点击跳转路线/省份详情页
-  chart.on('click', params => {
-    // 检查是否是线路相关的点击（点或线）
-    const routeMatch = params.seriesId?.match(/route(\d+)/)
-    
-    if (routeMatch) {
-      // 线路点击 - 提取线路编号并跳转
-      const routeId = routeMatch[1]
-      console.log('点击了线路：', routeId)
-      router.push(`/RouteView?route=${routeId}`)
-    } else if (params.name) {
-      // 省份点击 - 原有逻辑
-      console.log('点击了省份：', params.name)
-      router.push(`/province/${params.name}`)
-    }
-  })
+// 处理触摸事件（移动端）
+const touchStartY = ref(0)
+const handleTouchStart = (e) => {
+  if (animationController.value.isExpanded) return
+  touchStartY.value = e.touches[0].clientY
+}
 
 const handleTouchMove = (e) => {
   if (animationController.value.isExpanded || !touchStartY.value) return
@@ -786,4 +645,43 @@ footer {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
 }
+
+/* 景点卡片悬停效果增强 */
+.rounded-lg {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* 优化过渡动画 */
+.group-hover\:scale-110 {
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 按钮样式优化 */
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* 动画效果 */
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* 背景动态效果 */
+/* 移除无限循环的panZoom动画，改用基于滚动的缩放效果 */
 </style>

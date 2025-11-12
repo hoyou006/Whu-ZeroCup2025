@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-screen" style="background-color: #F4EAC5; color: #333;">
-    <!-- 顶部栏 -->
+    <!-- 顶部栏
     <header class="w-full bg-white/80 backdrop-blur sticky top-0 z-10 border-b">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <h1 class="text-xl font-bold tracking-wider" style="color:#549688">国家地理知识挑战</h1>
         <div class="text-sm text-gray-500">过关闯将 · 趣味问答</div>
       </div>
-    </header>
+    </header> -->
 
     <!-- 主体 -->
     <main class="max-w-3xl mx-auto px-4 py-8">

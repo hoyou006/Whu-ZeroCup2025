@@ -5,7 +5,7 @@
   import 'swiper/css/autoplay';
   import 'swiper/css/pagination';
   import 'swiper/css/effect-fade';
-  import NavBar from '@/component/NavBar.vue'
+
   // 导入省份数据JSON文件
   import provinceData from '../data/provinces.json';
   
@@ -13,7 +13,6 @@
     components: {
       Swiper,
       SwiperSlide,
-      NavBar,
     },
     data(){
       return {
@@ -32,9 +31,6 @@
 
 <template>
   <div class="province-container">
-
-    <NavBar></NavBar>
-
     <Swiper class="slide_container" 
     :modules="modules" loop :pagination="{clickable:true}"
       :autoplay="{delay:3000}" :slides-per-view="1" :centered-slides="true" :effect="'fade'" fade-effect="{crossFade: true}">
@@ -132,10 +128,23 @@
 </template>
 
 <style>
-.container{
-  width: 100vw;
-  height: 60vh;
+/* 定义字体 */
+@font-face {
+  font-family: 'MyFont';
+  src: url('/public/HYYanRuiMinKaiShuS.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化字体加载显示 */
+}
+
+.province-container {
+  min-height: 100vh;
   background-color: #F4EAC5;
+}
+
+.slide_container{
+  width: 100%;
+  height: 75vh;
 }
 
 .box{
