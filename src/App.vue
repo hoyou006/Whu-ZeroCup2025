@@ -13,7 +13,7 @@
               <router-link to="/" class="nav-item font-song text-white hover:text-primary transition-colors duration-300" exact-active-class="active">首页</router-link>
               <router-link to="/RouteView" class="nav-item font-song text-white hover:text-primary transition-colors duration-300" exact-active-class="active">山河漫游</router-link>
               <router-link to="/Challenge" class="nav-item font-song text-white hover:text-primary transition-colors duration-300" exact-active-class="active">过关闯将</router-link>
-              <router-link to="#" class="nav-item font-song text-white hover:text-primary transition-colors duration-300">云锦书来</router-link>
+              <router-link to="/Comment" class="nav-item font-song text-white hover:text-primary transition-colors duration-300">云锦书来</router-link>
             </div>
           </div>
         </div>

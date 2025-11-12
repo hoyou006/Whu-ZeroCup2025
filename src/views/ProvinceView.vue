@@ -9,123 +9,274 @@
   // 导入省份数据JSON文件
   import provinceData from '../data/provinces.json';
   
+  // 异步加载省份详情JSON文件（从public目录）
+  
   export default {
     components: {
       Swiper,
       SwiperSlide,
     },
-    data(){
-      return {
+    data(){      
+      return { 
         img_source: [],
-        modules :[Autoplay,Pagination,EffectFade]
+        modules :[Autoplay,Pagination,EffectFade],
+        provinceDetails: null, // 存储省份详情数据
+        currentProvince: '北京' // 当前显示的省份名称
       }
     },
     created() {
       // 从路由参数中获取省份名称
       const provinceName = this.$route.params.name || '北京';
+      this.currentProvince = provinceName;
       this.img_source = provinceData[provinceName] || provinceData['北京'] || [];
+      
+      // 加载省份详情数据
+      this.loadProvinceDetails(provinceName);
+    },
+    watch: {
+      // 监听路由参数变化，重新加载省份数据
+      '$route.params.name': {
+        handler(newName) {
+          if (newName && newName !== this.currentProvince) {
+            this.currentProvince = newName;
+            this.img_source = provinceData[newName] || provinceData['北京'] || [];
+            this.loadProvinceDetails(newName);
+            // 重新滚动到顶部
+            this.forceScrollToTop();
+          }
+        },
+        immediate: false
+      }
+    },
+    mounted() {
+      // 使用更强大的滚动到顶部策略
+      this.forceScrollToTop();
+    },
+    methods: {
+      // 强制滚动到顶部的方法
+      forceScrollToTop() {
+        // 立即执行一次滚动
+        this.performScrollToTop();
+        
+        // 使用nextTick确保DOM完全渲染后再次滚动
+        this.$nextTick(() => {
+          this.performScrollToTop();
+          
+          // 使用不同时间间隔的定时器进行多次尝试，确保可靠
+          const timeouts = [100, 300, 500, 1000];
+          timeouts.forEach(delay => {
+            setTimeout(() => {
+              this.performScrollToTop();
+            }, delay);
+          });
+        });
+      },
+      
+      // 执行滚动到顶部的具体操作
+      performScrollToTop() {
+        // 解除所有可能的滚动限制
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+        document.body.style.position = '';
+        document.documentElement.style.position = '';
+        
+        // 对所有可能的滚动容器进行滚动
+        // 1. window全局滚动
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        // 2. 文档根元素滚动
+        document.documentElement.scrollTop = 0;
+        document.documentElement.scrollLeft = 0;
+        // 3. body元素滚动
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+        
+        // 4. 检查并滚动主内容区域
+        const mainContent = document.querySelector('main');
+        if (mainContent) {
+          mainContent.scrollTop = 0;
+          mainContent.scrollLeft = 0;
+        }
+        
+        // 5. 检查并滚动路由视图容器
+        const routerView = document.querySelector('.router-view, [data-v-app]');
+        if (routerView) {
+          routerView.scrollTop = 0;
+          routerView.scrollLeft = 0;
+        }
+      },
+      
+      // 加载省份详情数据
+      async loadProvinceDetails(provinceName) {
+        try {
+          // 从public目录加载JSON文件
+          const response = await fetch('/province_details.json');
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const allDetails = await response.json();
+          // 获取指定省份的详情，如果不存在则使用北京的详情
+          this.provinceDetails = allDetails[provinceName] || allDetails['北京'] || {
+            intro: {
+              title: '介绍',
+              content: ['暂无数据', '请稍后再试']
+            },
+            history: {
+              title: '历史文化',
+              content: ['暂无数据', '请稍后再试']
+            },
+            development: {
+              title: '现代发展',
+              content: ['暂无数据', '请稍后再试']
+            },
+            food: {
+              title: '特色美食',
+              items: [
+                { name: '暂无数据', description: '请稍后再试' },
+                { name: '暂无数据', description: '请稍后再试' },
+                { name: '暂无数据', description: '请稍后再试' },
+                { name: '暂无数据', description: '请稍后再试' }
+              ]
+            }
+          };
+        } catch (error) {
+          console.error('加载省份详情失败:', error);
+          // 设置默认数据
+          this.provinceDetails = {
+            intro: {
+              title: '介绍',
+              content: ['数据加载失败', '请刷新页面重试']
+            },
+            history: {
+              title: '历史文化',
+              content: ['数据加载失败', '请刷新页面重试']
+            },
+            development: {
+              title: '现代发展',
+              content: ['数据加载失败', '请刷新页面重试']
+            },
+            food: {
+              title: '特色美食',
+              items: [
+                { name: '数据加载失败', description: '请刷新页面重试' },
+                { name: '数据加载失败', description: '请刷新页面重试' },
+                { name: '数据加载失败', description: '请刷新页面重试' },
+                { name: '数据加载失败', description: '请刷新页面重试' }
+              ]
+            }
+          };
+        }
+      }
     }
   };
 </script>
 
 
 <template>
-  <div class="province-container">
-    <Swiper class="slide_container" 
-    :modules="modules" loop :pagination="{clickable:true}"
-      :autoplay="{delay:3000}" :slides-per-view="1" :centered-slides="true" :effect="'fade'" fade-effect="{crossFade: true}">
-      <SwiperSlide v-for="(src,index) in img_source" :key="index" class="box">
-        <div class="slide_wrapper ">
-        <img :src="src.img" class="slide-image "  />
-        <div class="description ">
-          <div class="des_title ">{{ src.title }}</div>
-        </div>
-        </div>
-      </SwiperSlide>
-    </Swiper>
+    <div class="province-container">
+      <Swiper class="slide_container" 
+      :modules="modules" loop :pagination="{clickable:true}"
+        :autoplay="{delay:3000}" :slides-per-view="1" :centered-slides="true" :effect="'fade'" fade-effect="{crossFade: true}">
+        <SwiperSlide v-for="(src,index) in img_source" :key="index" class="box">
+          <div class="slide_wrapper ">
+          <img :src="src.img" class="slide-image "  />
+          <div class="description ">
+            <div class="des_title ">{{ src.title }}</div>
+          </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
 
-    <!-- 详情展示部分 -->
-    <main class="max-w-6xl mx-auto px-4 py-12">
-      <div class="space-y-12">
-        <!-- 介绍部分 -->
-        <section id="tag1" class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="flex items-center p-4 h-20" style="background-color: #549688">
-              <img src="/img/mountain.png" alt="图标" class="w-20 h-20 mr-4 object-contain flex-shrink-0" />
-            <h2 class="text-2xl font-bold text-white ml-2">介绍</h2>
-          </div>
-          <div class="p-8">
-            <p class="mb-4 text-gray-700 leading-relaxed">
-              北京，中国的首都，是一座有着3000多年历史的古都，拥有丰富的历史文化遗产和现代城市风貌。北京是全国的政治、文化和国际交往中心，也是一座著名的旅游城市。
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              北京有着众多世界闻名的旅游景点，如故宫、长城、天坛、颐和园等。这些历史古迹见证了中国悠久的历史和灿烂的文化。同时，北京也是一座充满活力的现代化大都市，拥有众多现代化建筑和设施。
-            </p>
-          </div>
-        </section>
-
-        <!-- 历史文化部分 -->
-        <section id="tag2" class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="flex items-center p-4 h-20" style="background-color: #549688">
-              <img src="/img/mountain.png" alt="图标" class="w-20 h-20 mr-4 object-contain flex-shrink-0" />
-            <h2 class="text-2xl font-bold text-white ml-2">历史文化</h2>
-          </div>
-          <div class="p-8">
-            <p class="mb-4 text-gray-700 leading-relaxed">
-              北京是中国历史上多个朝代的首都，特别是元、明、清三朝在此建都长达几百年，留下了大量珍贵的历史文化遗产。故宫是世界上现存规模最大、保存最为完整的木质结构古建筑群，被誉为“世界五大宫”之首。
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              长城是中国古代伟大的防御工程，也是世界文化遗产。北京段的长城如八达岭、慕田峪等，是长城中保存最好、最具代表性的部分。此外，北京还有众多的寺庙、园林和胡同，展现了中国传统文化的多样性和丰富性。
-            </p>
-          </div>
-        </section>
-
-        <!-- 现代发展部分 -->
-        <section id="tag3" class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="flex items-center p-4 h-20" style="background-color: #549688">
-              <img src="/img/mountain.png" alt="图标" class="w-20 h-20 mr-4 object-contain flex-shrink-0" />
-            <h2 class="text-2xl font-bold text-white ml-2">现代发展</h2>
-          </div>
-          <div class="p-8">
-            <p class="mb-4 text-gray-700 leading-relaxed">
-              近年来，北京在保持历史文化特色的同时，也在快速发展现代化建设。鸟巢、水立方等奥运场馆成为北京新的标志性建筑。中关村科技园区是中国重要的科技创新中心，汇聚了众多高科技企业和研究机构。
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              北京的城市规划注重生态环境保护，建设了众多的公园和绿化带。同时，北京的公共交通系统日益完善，地铁线路四通八达，为市民和游客提供了便捷的出行方式。
-            </p>
-          </div>
-        </section>
-
-        <!-- 特色美食部分 -->
-        <section id="tag4" class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="flex items-center p-4 h-20" style="background-color: #549688">
-              <img src="/img/mountain.png" alt="图标" class="w-20 h-20 mr-4 object-contain flex-shrink-0" />
-            <h2 class="text-2xl font-bold text-white ml-2">特色美食</h2>
-          </div>
-          <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">北京烤鸭</h3>
-                <p class="text-gray-600">北京最著名的菜肴之一，外皮酥脆，肉质鲜嫩</p>
+      <!-- 详情展示部分 -->
+      <main class="max-w-6xl mx-auto px-4 py-12">
+        <div class="space-y-12">
+          <!-- 介绍部分 -->
+          <section id="tag1" class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center p-4 h-20 bg-gradient-to-r from-teal-700 to-teal-600">
+                <img src="/img/mountain.png" alt="图标" class="w-16 h-16 mr-4 object-contain flex-shrink-0" />
+              <h2 class="text-2xl font-bold text-white ml-2 font-lxgwwen">
+                {{ provinceDetails?.intro?.title || '介绍' }}
+              </h2>
+            </div>
+            <div class="p-8 bg-[#f8f9fa]">
+              <div v-if="provinceDetails?.intro?.content" class="text-content">
+                <p v-for="(paragraph, index) in provinceDetails.intro.content" :key="index" class="mb-6 text-gray-700 leading-relaxed text-lg font-lxgwwen">
+                  {{ paragraph }}
+                </p>
               </div>
-              <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">炸酱面</h3>
-                <p class="text-gray-600">老北京传统面食，酱香浓郁，风味独特</p>
-              </div>
-              <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">豆汁儿焦圈</h3>
-                <p class="text-gray-600">北京传统小吃，具有浓郁的地方特色</p>
-              </div>
-              <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">涮羊肉</h3>
-                <p class="text-gray-600">冬季特色美食，肉质鲜嫩，汤底醇厚</p>
+              <div v-else class="text-center py-8">
+                <p class="text-gray-500 font-lxgwwen">暂无介绍数据</p>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-</template>
+          </section>
+
+          <!-- 历史文化部分 -->
+          <section id="tag2" class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center p-4 h-20 bg-gradient-to-r from-teal-700 to-teal-600">
+                <img src="/img/mountain.png" alt="图标" class="w-16 h-16 mr-4 object-contain flex-shrink-0" />
+              <h2 class="text-2xl font-bold text-white ml-2 font-lxgwwen">
+                {{ provinceDetails?.history?.title || '历史文化' }}
+              </h2>
+            </div>
+            <div class="p-8 bg-[#f8f9fa]">
+              <div v-if="provinceDetails?.history?.content" class="text-content">
+                <p v-for="(paragraph, index) in provinceDetails.history.content" :key="index" class="mb-6 text-gray-700 leading-relaxed text-lg font-lxgwwen">
+                  {{ paragraph }}
+                </p>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-gray-500 font-lxgwwen">暂无历史文化数据</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 现代发展部分 -->
+          <section id="tag3" class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center p-4 h-20 bg-gradient-to-r from-teal-700 to-teal-600">
+                <img src="/img/mountain.png" alt="图标" class="w-16 h-16 mr-4 object-contain flex-shrink-0" />
+              <h2 class="text-2xl font-bold text-white ml-2 font-lxgwwen">
+                {{ provinceDetails?.development?.title || '现代发展' }}
+              </h2>
+            </div>
+            <div class="p-8 bg-[#f8f9fa]">
+              <div v-if="provinceDetails?.development?.content" class="text-content">
+                <p v-for="(paragraph, index) in provinceDetails.development.content" :key="index" class="mb-6 text-gray-700 leading-relaxed text-lg font-lxgwwen">
+                  {{ paragraph }}
+                </p>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-gray-500 font-lxgwwen">暂无现代发展数据</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 特色美食部分 -->
+          <section id="tag4" class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <div class="flex items-center p-4 h-20 bg-gradient-to-r from-teal-700 to-teal-600">
+                <img src="/img/mountain.png" alt="图标" class="w-16 h-16 mr-4 object-contain flex-shrink-0" />
+              <h2 class="text-2xl font-bold text-white ml-2 font-lxgwwen">
+                {{ provinceDetails?.food?.title || '特色美食' }}
+              </h2>
+            </div>
+            <div class="p-8 bg-[#f8f9fa]">
+              <div v-if="provinceDetails?.food?.items" class="food-grid">
+                <div v-for="(item, index) in provinceDetails.food.items" :key="index" class="food-card bg-white p-6 rounded-lg shadow border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                  <h3 class="text-xl font-bold text-gray-800 mb-3 font-lxgwwen text-teal-800">
+                    {{ item.name }}
+                  </h3>
+                  <p class="text-gray-600 font-lxgwwen">
+                    {{ item.description }}
+                  </p>
+                </div>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-gray-500 font-lxgwwen">暂无特色美食数据</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </template>
 
 <style>
 /* 定义字体 */
@@ -137,9 +288,19 @@
   font-display: swap; /* 优化字体加载显示 */
 }
 
+/* 定义新的LXGW WenKai字体 */
+@font-face {
+  font-family: 'LXGW WenKai';
+  src: url('/public/LXGWWenKaiLite-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化字体加载显示 */
+}
+
 .province-container {
   min-height: 100vh;
   background-color: #F4EAC5;
+  font-family: 'LXGW WenKai', 'MyFont', serif;
 }
 
 .slide_container{
@@ -160,11 +321,18 @@
   width: 70%!important;
   height: 100%;
 }
+
 .slide-image{
   width: 100%!important;
   height: 100%!important;
   object-fit: fill;
+  transition: transform 0.5s ease;
 }
+
+.slide-image:hover{
+  transform: scale(1.02);
+}
+
 .description{
   width: 70%;
   height: 20%;
@@ -178,7 +346,7 @@
   justify-content: center;
   align-items: center;
 }
-/* 这里记得换个字体 */
+
 .des_title{
   font-size: 64px;
   font-family: 'MyFont';
@@ -186,10 +354,125 @@
   color: white;
   margin-bottom: 20px;
   letter-spacing: 5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* 自定义字体类 */
+.font-lxgwwen {
+  font-family: 'LXGW WenKai', serif;
+}
 
-/* 详情展示部分样式通过Tailwind CSS实现 */
-/* 移除了旧的timelist相关样式，便于调试和后续修改 */
+/* 优化文字内容排版 */
+.text-content p {
+  text-indent: 2em; /* 首行缩进 */
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+}
 
+/* 美食卡片网格布局 */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .des_title {
+    font-size: 48px;
+  }
+  
+  .food-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .text-content p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .des_title {
+    font-size: 36px;
+  }
+  
+  .slide_wrapper {
+    width: 90% !important;
+  }
+  
+  .description {
+    width: 90%;
+  }
+}
+
+/* 平滑过渡效果 */
+section {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 美食卡片悬停效果 */
+.food-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: #4fd1c5;
+}
+
+/* 滚动条样式优化 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #549688;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a8478;
+}
+
+/* 确保背景色正确
+.bg-[#F8F9FA] {
+  background-color: #f8f9fa;
+} */
+
+/* 确保背景渐变正确 */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-teal-700 {
+  --tw-gradient-from: #0f766e;
+  --tw-gradient-to: #0d9488;
+}
+
+.to-teal-600 {
+  --tw-gradient-to: #0d9488;
+}
+
+/* 确保阴影效果 */
+.hover\:shadow-xl:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* 确保文字颜色 */
+.text-teal-800 {
+  color: #134e4a;
+}
 </style>

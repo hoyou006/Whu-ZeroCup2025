@@ -499,6 +499,7 @@ onMounted(async () => {
   document.body.style.overflow = 'hidden'
 })
 
+// 路由离开钩子 - 这是关键修复：在离开HomeView时清理滚动限制
 onBeforeUnmount(() => {
   // 清理动画
   if (animationController.value.timeline) {
@@ -524,8 +525,17 @@ onBeforeUnmount(() => {
     video.removeEventListener('error', handleVideoError)
   }
   
-  // 恢复页面滚动设置
-  document.body.style.overflow = 'auto'
+  // 恢复页面滚动设置 - 确保解除所有滚动限制
+  document.body.style.overflow = 'auto';
+  document.documentElement.style.overflow = 'auto';
+  // 清除可能的position固定设置
+  document.body.style.position = '';
+  document.documentElement.style.position = '';
+  // 重置transform相关属性
+  document.body.style.transform = '';
+  document.documentElement.style.transform = '';
+  // 重置滚动位置
+  window.scrollTo({ top: 0, behavior: 'auto' });
 })
 </script>
 
