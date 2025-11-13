@@ -11,7 +11,7 @@
         <div class="relative w-[60vw] h-[40vh] max-w-[800px] max-h-[450px] transition-all duration-1000 ease-out" id="videoContainer">
           <video 
             id="heroVideo"
-            class="w-full h-full object-cover rounded-lg"
+            class="w-full h-full object-contain rounded-lg"
             autoplay 
             muted 
             loop 
@@ -220,15 +220,35 @@ const handleScrollAnimation = (progress) => {
   const clampedProgress = Math.min(Math.max(progress, 0), 1)
   animationController.value.progress = clampedProgress
   
-  // 视频容器展开动画
+  // 视频容器展开动画 - 修改为保持原始宽高比并显示完整画面
   const videoContainer = document.getElementById('videoContainer')
   if (videoContainer) {
+    // 计算保持宽高比的缩放比例，确保视频完全显示且不裁剪
+    // 视频初始宽高比约为 60vw:40vh = 3:2
+    const videoAspectRatio = 3 / 2;
+    const screenAspectRatio = window.innerWidth / window.innerHeight;
+    
+    // 计算缩放倍数，根据屏幕和视频宽高比决定，添加安全系数确保完全覆盖背景
+    let scaleFactor;
+    const fullScaleHeight = (window.innerHeight / (40 * 0.01 * window.innerHeight)) * 1.1;
+    const fullScaleWidth = (window.innerWidth / (60 * 0.01 * window.innerWidth)) * 1.1;
+    
+    if (screenAspectRatio >= videoAspectRatio) {
+      // 屏幕较宽，以高度为基准缩放
+      scaleFactor = 1 + clampedProgress * (fullScaleHeight - 1);
+    } else {
+      // 屏幕较窄，以宽度为基准缩放
+      scaleFactor = 1 + clampedProgress * (fullScaleWidth - 1);
+    }
+    
     gsap.to(videoContainer, {
-      width: clampedProgress >= 1 ? '100vw' : '60vw',
-      height: clampedProgress >= 1 ? '100vh' : '40vh',
+      scale: scaleFactor,
       borderRadius: clampedProgress >= 1 ? 0 : '0.5rem',
+      zIndex: clampedProgress >= 1 ? 30 : 10,
       duration: 0.5,
-      ease: clampedProgress >= 1 ? 'power2.out' : 'power2.in'
+      ease: clampedProgress >= 1 ? 'power2.out' : 'power2.in',
+      // 确保从中心缩放
+      transformOrigin: 'center center'
     })
   }
   
@@ -254,11 +274,11 @@ const handleScrollAnimation = (progress) => {
     })
   }
   
-  // 背景图片缩放动画
+  // 背景图片保持原尺寸，不应用缩放效果
   const backgroundImage = document.getElementById('backgroundImage')
   if (backgroundImage) {
     gsap.to(backgroundImage, {
-      scale: 1 + clampedProgress * 0.3,
+      scale: 1, // 始终保持原始尺寸
       duration: 0.5,
       ease: 'power2.out'
     })
@@ -333,15 +353,31 @@ const handleTouchMove = (e) => {
 const completeExpansion = () => {
   animationController.value.isScrolling = true
   
-  // 确保视频完全展开并覆盖全屏
+  // 确保视频完全展开并保持原始宽高比显示完整画面
   const videoContainer = document.getElementById('videoContainer')
   if (videoContainer) {
+    // 计算保持宽高比的缩放倍数，确保视频完全显示且不裁剪
+    const videoAspectRatio = 3 / 2; // 视频初始宽高比 60vw:40vh
+    const screenAspectRatio = window.innerWidth / window.innerHeight;
+    
+    let fullScale;
+    // 增加缩放倍数，确保完全覆盖背景
+    // 添加10%的安全边距，确保没有背景露出
+    if (screenAspectRatio >= videoAspectRatio) {
+      // 屏幕较宽，以高度为基准缩放，增加安全系数
+      fullScale = (window.innerHeight / (40 * 0.01 * window.innerHeight)) * 1.1;
+    } else {
+      // 屏幕较窄，以宽度为基准缩放，增加安全系数
+      fullScale = (window.innerWidth / (60 * 0.01 * window.innerWidth)) * 1.1;
+    }
+    
     gsap.to(videoContainer, {
-      width: '100vw',
-      height: '100vh',
+      scale: fullScale,
       borderRadius: 0,
+      zIndex: 30,
       duration: 0.5,
       ease: 'power2.out',
+      transformOrigin: 'center center',
       onComplete: () => {
         animationController.value.isExpanded = true
         // 延迟后允许页面正常滚动

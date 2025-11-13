@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 全局导航栏 - 固定在顶部，透明背景 -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-[1000] bg-[#549688] opacity-80">
+      <nav id="navbar" class="fixed top-0 left-0 right-0 z-[1000] bg-transparent">
         <div class="flex items-center px-6 py-4">
           <!-- 左侧logo、标题和导航链接 -->
           <div class="flex items-center">
@@ -131,7 +131,7 @@ html, body {
 }
 
 .nav-item.active {
-  color: var(--color-primary) !important;
+  color: #425066 !important;
   font-weight: 600;
 }
 
@@ -143,7 +143,7 @@ html, body {
   transform: translateX(-50%);
   width: 20px;
   height: 3px;
-  background-color: var(--color-primary);
+  background-color: #425066;
   border-radius: 2px;
 }
 
