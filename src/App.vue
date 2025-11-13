@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 全局导航栏 - 固定在顶部，透明背景 -->
-      <nav id="navbar" class="fixed top-0 left-0 right-0 z-[1000] bg-transparent">
+      <nav id="navbar" class="fixed top-0 left-0 right-0 z-[1000] bg-[#549688]">
         <div class="flex items-center px-6 py-4">
           <!-- 左侧logo、标题和导航链接 -->
           <div class="flex items-center">

@@ -478,6 +478,7 @@ onMounted(async () => {
         backgroundColor: 'transparent',
         series: [
           {
+        
             type: 'map3D',
             map: 'china',
             regionHeight: 3,

@@ -3,324 +3,357 @@
 
     <!-- 页面标题 -->
     <header class="page-header">
-      <div class="container">
+      <!-- <div class="container">
         <div class="header-content">
-          <img src="/img/shanhetuzhi.png" alt="山河漫游" class="logo-image">
+          <img src="/img/shanhetuzhi.png" alt="山河漫游" 
+          class="logo-image">
+          
         </div>
         <p class="header-description">
           三条经典路线，带您领略中国大地的壮美与神奇
         </p>
-      </div>
+      </div> -->
     </header>
 
     <!-- 路线导航 -->
     <section class="route-navigation">
       <div class="container">
         <div class="route-buttons" id="routeButtons">
-          <button class="route-btn active" data-route="route1">
-            <i class="fa fa-map-signs"></i>
-            <span>东部海岸线之旅</span>
-          </button>
-          <button class="route-btn" data-route="route2">
-            <i class="fa fa-mountain"></i>
-            <span>中部山水风光之旅</span>
-          </button>
-          <button class="route-btn" data-route="route3">
-            <i class="fa fa-globe"></i>
-            <span>西部壮美景观之旅</span>
+          <button 
+            class="route-btn" 
+            :class="{ inactive: currentRegion === region, active: currentRegion !== region }" 
+            @click="handleRegionChange(region)"
+            v-for="region in regionOptions" 
+            :key="region"
+          >
+            <!-- 根据区域显示不同图标和文字 -->
+            <i :class="getRegionIcon(region)"></i>
+            <span>{{ getRegionName(region) }}</span>
           </button>
         </div>
       </div>
     </section>
-
+    
+    <!-- 新增：地图和景点详情的容器，用于左右布局 -->
+    <section class="main-content">
+      <div class="container">
     <!-- 地图展示区 -->
     <section class="map-section">
+      <div id="map-container" style="width: 100%; height: 600px;"></div>
+    </section>
+    
+     <!-- 新增景点导航与详情区域 -->
+     <section class="attractions-section">
       <div class="container">
-        <!-- 路线内容容器 -->
-        <div class="route-content active" id="route1Content">
-          <div class="route-content-wrapper">
-            <!-- 地图区域 -->
-            <div class="map-container">
-              <div class="map-box">
-                <svg viewBox="0 0 800 600" class="map-svg">
-                  <!-- 简化的中国地图轮廓 -->
-                  <path
-                    d="M300,100 C350,80 400,90 450,80 C500,70 550,90 600,80 C650,70 700,90 750,100 C730,150 720,200 710,250 C700,300 690,350 680,400 C670,450 660,500 650,550 C600,530 550,520 500,510 C450,500 400,510 350,520 C300,530 250,540 200,550 C210,500 220,450 230,400 C240,350 250,300 260,250 C270,200 280,150 290,100 Z"
-                    fill="#f5f5f5" stroke="#2E8B57" stroke-width="2" />
-
-                  <!-- 东部路线 -->
-                  <path
-                    d="M250,450 L300,420 L350,400 L400,380 L450,360 L500,350 L550,340 L600,330 L650,340 L700,360"
-                    fill="none" stroke="#2E8B57" stroke-width="4" class="route-line" />
-
-                  <!-- 路线节点 -->
-                  <circle cx="250" cy="450" r="8" fill="#2E8B57" class="scale-up" data-city="青岛" />
-                  <circle cx="350" cy="400" r="8" fill="#2E8B57" class="scale-up" data-city="上海" />
-                  <circle cx="450" cy="360" r="8" fill="#2E8B57" class="scale-up" data-city="杭州" />
-                  <circle cx="550" cy="340" r="8" fill="#2E8B57" class="scale-up" data-city="厦门" />
-                  <circle cx="650" cy="340" r="8" fill="#2E8B57" class="scale-up" data-city="广州" />
-                  <circle cx="700" cy="360" r="8" fill="#2E8B57" class="scale-up" data-city="深圳" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 路线详情 -->
-            <div class="detail-container">
-              <div class="detail-box">
-                <h2 class="route-title">
-                  <i class="fa fa-map-signs"></i> 东部海岸线之旅
-                </h2>
-                <div class="title-divider"></div>
-
-                <p class="route-description">
-                  这条路线沿着中国东部海岸线，串联起多个重要的沿海城市和旅游胜地。从北到南，您将领略到不同的海洋风光、城市魅力和人文景观。
-                </p>
-
-                <div class="city-list">
-                  <div class="city-item">
-                    <h4 class="city-name">青岛</h4>
-                    <p class="city-desc">海滨城市，啤酒之都，红瓦绿树，碧海蓝天</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">上海</h4>
-                    <p class="city-desc">国际大都市，外滩风光，东方明珠塔</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">杭州</h4>
-                    <p class="city-desc">人间天堂，西湖美景，江南水乡</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">厦门</h4>
-                    <p class="city-desc">海上花园城市，鼓浪屿，闽南风情</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">广州</h4>
-                    <p class="city-desc">千年商都，珠江夜景，岭南文化</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">深圳</h4>
-                    <p class="city-desc">创新之城，现代都市风光</p>
-                  </div>
-                </div>
-              </div>
+        <div class="attractions-content">
+          <!-- 左侧导航竖线 -->
+          <div class="navigation-line">
+            <div 
+              class="nav-point" 
+              :class="{ active: currentAttraction === attraction.id }"
+              @click="currentAttraction = attraction.id"
+              v-for="(attraction, index) in attractions" 
+              :key="attraction.id"
+              :style="{ top: `${(index / (attractions.length - 1)) * 100}%` }"
+            >
+              <span class="point-number">{{ index + 1 }}</span>
             </div>
           </div>
-        </div>
-
-        <div class="route-content" id="route2Content">
-          <div class="route-content-wrapper">
-            <!-- 地图区域 -->
-            <div class="map-container">
-              <div class="map-box">
-                <svg viewBox="0 0 800 600" class="map-svg">
-                  <!-- 简化的中国地图轮廓 -->
-                  <path
-                    d="M300,100 C350,80 400,90 450,80 C500,70 550,90 600,80 C650,70 700,90 750,100 C730,150 720,200 710,250 C700,300 690,350 680,400 C670,450 660,500 650,550 C600,530 550,520 500,510 C450,500 400,510 350,520 C300,530 250,540 200,550 C210,500 220,450 230,400 C240,350 250,300 260,250 C270,200 280,150 290,100 Z"
-                    fill="#f5f5f5" stroke="#2E8B57" stroke-width="2" />
-
-                  <!-- 中部路线 -->
-                  <path d="M300,250 L350,280 L400,260 L450,250 L500,270 L550,260 L600,280" fill="none"
-                    stroke="#5F9EA0" stroke-width="4" class="route-line" />
-
-                  <!-- 路线节点 -->
-                  <circle cx="300" cy="250" r="8" fill="#5F9EA0" class="scale-up" data-city="西安" />
-                  <circle cx="350" cy="280" r="8" fill="#5F9EA0" class="scale-up" data-city="郑州" />
-                  <circle cx="400" cy="260" r="8" fill="#5F9EA0" class="scale-up" data-city="武汉" />
-                  <circle cx="450" cy="250" r="8" fill="#5F9EA0" class="scale-up" data-city="长沙" />
-                  <circle cx="500" cy="270" r="8" fill="#5F9EA0" class="scale-up" data-city="成都" />
-                  <circle cx="550" cy="260" r="8" fill="#5F9EA0" class="scale-up" data-city="重庆" />
-                  <circle cx="600" cy="280" r="8" fill="#5F9EA0" class="scale-up" data-city="贵阳" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 路线详情 -->
-            <div class="detail-container">
-              <div class="detail-box">
-                <h2 class="route-title secondary">
-                  <i class="fa fa-mountain"></i> 中部山水风光之旅
-                </h2>
-                <div class="title-divider secondary"></div>
-
-                <p class="route-description">
-                  这条路线贯穿中国中部地区，汇集了名山大川和历史文化名城。您将欣赏到壮丽的山水风光，感受深厚的历史文化底蕴。
-                </p>
-
-                <div class="city-list secondary">
-                  <div class="city-item">
-                    <h4 class="city-name">西安</h4>
-                    <p class="city-desc">十三朝古都，兵马俑，丝绸之路起点</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">郑州</h4>
-                    <p class="city-desc">华夏文明发源地，嵩山少林寺</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">武汉</h4>
-                    <p class="city-desc">江城，黄鹤楼，长江大桥</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">长沙</h4>
-                    <p class="city-desc">岳麓山，橘子洲头，湖湘文化</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">成都</h4>
-                    <p class="city-desc">天府之国，大熊猫基地，川菜文化</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">重庆</h4>
-                    <p class="city-desc">山城，火锅之都，长江三峡起点</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="route-content" id="route3Content">
-          <div class="route-content-wrapper">
-            <!-- 地图区域 -->
-            <div class="map-container">
-              <div class="map-box">
-                <svg viewBox="0 0 800 600" class="map-svg">
-                  <!-- 简化的中国地图轮廓 -->
-                  <path
-                    d="M300,100 C350,80 400,90 450,80 C500,70 550,90 600,80 C650,70 700,90 750,100 C730,150 720,200 710,250 C700,300 690,350 680,400 C670,450 660,500 650,550 C600,530 550,520 500,510 C450,500 400,510 350,520 C300,530 250,540 200,550 C210,500 220,450 230,400 C240,350 250,300 260,250 C270,200 280,150 290,100 Z"
-                    fill="#f5f5f5" stroke="#2E8B57" stroke-width="2" />
-
-                  <!-- 西部路线 -->
-                  <path d="M250,150 L300,180 L350,150 L400,180 L450,150 L500,170" fill="none"
-                    stroke="#8FBC8F" stroke-width="4" class="route-line" />
-
-                  <!-- 路线节点 -->
-                  <circle cx="250" cy="150" r="8" fill="#8FBC8F" class="scale-up" data-city="拉萨" />
-                  <circle cx="300" cy="180" r="8" fill="#8FBC8F" class="scale-up" data-city="西宁" />
-                  <circle cx="350" cy="150" r="8" fill="#8FBC8F" class="scale-up" data-city="乌鲁木齐" />
-                  <circle cx="400" cy="180" r="8" fill="#8FBC8F" class="scale-up" data-city="兰州" />
-                  <circle cx="450" cy="150" r="8" fill="#8FBC8F" class="scale-up" data-city="银川" />
-                  <circle cx="500" cy="170" r="8" fill="#8FBC8F" class="scale-up" data-city="呼和浩特" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- 路线详情 -->
-            <div class="detail-container">
-              <div class="detail-box">
-                <h2 class="route-title accent">
-                  <i class="fa fa-globe"></i> 西部壮美景观之旅
-                </h2>
-                <div class="title-divider accent"></div>
-
-                <p class="route-description">
-                  这条路线带您探索中国西部的壮美景观和多元文化。从雪域高原到沙漠绿洲，从草原牧场到民族风情，体验大自然的神奇与人文的魅力。
-                </p>
-
-                <div class="city-list accent">
-                  <div class="city-item">
-                    <h4 class="city-name">拉萨</h4>
-                    <p class="city-desc">日光城，布达拉宫，藏族文化</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">西宁</h4>
-                    <p class="city-desc">青藏高原门户，塔尔寺，青海湖</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">乌鲁木齐</h4>
-                    <p class="city-desc">西域风情，天山天池，葡萄沟</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">兰州</h4>
-                    <p class="city-desc">黄河之都，拉面文化，丝路重镇</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">银川</h4>
-                    <p class="city-desc">塞上江南，西夏王陵，回族文化</p>
-                  </div>
-                  <div class="city-item">
-                    <h4 class="city-name">呼和浩特</h4>
-                    <p class="city-desc">草原明珠，蒙古族风情，昭君墓</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
+          <!-- 右侧景点详情 -->
+          <div class="attraction-details">
+            <transition name="fade">
+              <div class="detail-item" v-if="currentAttractionData">
+    <img 
+      :src="currentAttractionData.imageUrl" 
+      :alt="currentAttractionData.name" 
+      class="attraction-image"
+    >
+    <div class="attraction-info">
+      <h3 class="attraction-name">{{ currentAttractionData.name }}</h3>
+      <p class="attraction-description">{{ currentAttractionData.description }}</p>
+    </div>
+  </div>
+            </transition>
           </div>
         </div>
       </div>
-    </section>
+    </section>    
   </div>
+</section>
+    </div>
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
-// import NavBar from '@/component/NavBar.vue'
-// import { useRouter } from 'vue-router'
+import * as echarts from 'echarts'
+import 'echarts-gl'
+import { computed,onMounted, onBeforeUnmount, ref, nextTick} from 'vue'
+//import { useRouter } from 'vue-router'
 
-// const router = useRouter()
-
-onMounted(() => {
-  // 移动端菜单切换
-  const menuBtn = document.getElementById('menuBtn')
-  const mobileMenu = document.getElementById('mobileMenu')
-  
-  if (menuBtn && mobileMenu) {
-    menuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('show')
-    })
+const regionOptions = ['东', '中', '西'] // 东/中/西区域
+const currentRegion = ref('东') // 默认选中东部
+let chart = null
+// 根据区域返回图标class
+const getRegionIcon = (region) => {
+  const icons = {
+    '东': 'fa fa-map-signs',
+    '中': 'fa fa-mountain',
+    '西': 'fa fa-globe'
   }
+  return icons[region]
+}
+// 根据区域返回显示名称
+const getRegionName = (region) => {
+  const names = {
+    '东': '北国边疆揽胜线',
+    '中': '中原文脉寻踪线',
+    '西': '南国山海漫游线'
+  }
+  return names[region]
+}
 
-  // 路线切换功能
-  const routeButtons = document.querySelectorAll('.route-btn')
-  const routeContents = document.querySelectorAll('.route-content')
-  
-  routeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const route = button.getAttribute('data-route')
-      
-      // 更新按钮状态
-      routeButtons.forEach(btn => {
-        btn.classList.remove('active')
-        btn.classList.add('inactive')
-      })
-      button.classList.add('active')
-      button.classList.remove('inactive')
-      
-      // 更新内容显示
-      routeContents.forEach(content => {
-        content.classList.remove('active')
-      })
-      const activeContent = document.getElementById(`${route}Content`)
-      if (activeContent) {
-        activeContent.classList.add('active')
-      }
-    })
-  })
+// 封装线路配置生成函数（复用逻辑，避免重复代码）
+function generateSeriesRoute(routeData, routeId) {
+  return [
+    // 线路的点
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      //id: `scatter_route${routeId}`, // 唯一标识，避免冲突
+      id: `scatter_route`,
+      data: routeData.coordinates.map((coord, i) => ({
+        name: `线路${routeId}_点${i+1}`,
+        value: coord,
+        symbolSize: 8,
+        itemStyle: { color: '#d44545' }
+      })),
+      zlevel: 5
+    },
+    // 线路的线
+    {
+      type: 'lines',
+      coordinateSystem: 'geo',
+      //id: `lines_route${routeId}`, // 唯一标识
+      id: `lines_route`, 
+      polyline: true,
+      data: [{ coords: routeData.coordinates }],
+      lineStyle: { color: 'white', width: 2, type: 'solid' },
+      effect: { show: true, constantSpeed: 10, trailLength: 0.3, color: 'red' },
+      zlevel: 4
+    }
+  ]
+}
 
-  // 节点悬停效果
-  const cityNodes = document.querySelectorAll('.scale-up[data-city]')
-  cityNodes.forEach(node => {
-    node.addEventListener('mouseenter', () => {
-      node.setAttribute('r', '10')
-    })
-    node.addEventListener('mouseleave', () => {
-      node.setAttribute('r', '8')
-    })
-  })
+const attractions = ref([])
+const currentAttraction = ref(null)
+const currentAttractionData = computed(() => {
+  return attractions.value.find(item => item.id === currentAttraction.value)
 })
 
-onBeforeUnmount(() => {
-  // 清理事件监听
-  const menuBtn = document.getElementById('menuBtn')
-  const mobileMenu = document.getElementById('mobileMenu')
-  
-  if (menuBtn && mobileMenu) {
-    menuBtn.removeEventListener('click', () => {
-      mobileMenu.classList.toggle('show')
-    })
+// 新增：加载景点数据
+const loadAttractionsData = async (region) => {
+  try {
+    // 根据不同区域加载不同的景点数据
+    const res = await fetch(`/attractions/${region === '东' ? 'east' : region === '中' ? 'middle' : 'west'}.json`)
+    if (!res.ok) throw new Error(`请求景点数据失败: ${res.status}`)
+    const data = await res.json()
+    attractions.value = data
+    // 默认显示第一个景点
+    if (data.length > 0) {
+      currentAttraction.value = data[0].id
+    }
+  } catch (error) {
+    console.error('加载景点数据失败:', error)
   }
+}
+
+onMounted(async () => {
+  // 等待DOM元素完全渲染
+  await nextTick();
+  // 初始化地图容器
+  const dom = document.getElementById('map-container');
+  if (!dom) {
+    console.error('未找到地图容器元素');
+    return;
+  }
+  chart = echarts.init(dom);
+  const geoRes = await fetch('/china.json');
+  const chinaGeo = await geoRes.json();
+  let routeId=1;
+  echarts.registerMap('china', chinaGeo);
+  // 定义线路数据
+  const route = await fetch('/routes/1.json').then(res => res.json());
+  // 生成当前区域的线路系列
+  const seriesRoute = generateSeriesRoute(route, routeId);
+// 4. 设置地图初始配置
+const option = {
+  backgroundColor: '#206864',
+  geo: {
+    map: 'china',
+    roam: false, // 禁止缩放平移，如需开启可设为true
+    label: {
+      show: true,
+      color: 'white'
+    },
+    itemStyle: {
+      color: '#0e1a2b',
+      borderColor: '#F4EAC5',
+      borderWidth: 0.5,
+      opacity: 1
+    },
+    emphasis: {
+      label: { show: true, color: '#F4EAC5', fontSize: 16, fontWeight: 'bold' },
+      itemStyle: { color: '#2F4F4F', borderWidth: 2 },
+      regionHeight: 5
+    }
+  },
+  series: [
+    // // 基础线路图层（可留空或配置默认样式）
+    // {
+    //   type: 'lines',
+    //   coordinateSystem: 'geo',
+    //   effect: {
+    //     show: true,
+    //     constantSpeed: 10,
+    //     trailLength: 0.3,
+    //     color: '#549688'
+    //   }
+    // },
+    ...seriesRoute // 追加当前区域的线路系列
+  ]
+  };
+  if (chart && chart.setOption) {
+    chart.setOption(option);
+    window.addEventListener('resize', () => chart && chart.resize());
+  } else {
+    console.error('图表实例初始化失败');
+  }
+
+  await loadAttractionsData(currentRegion.value)
+});
+
+const handleRegionChange = async (region) => {
+  // 先验证区域合法性（提前验证，避免无效请求）
+  if (!regionOptions.includes(region)) {
+    console.warn(`无效区域: ${region}`)
+    return
+  }
+
+  try {
+    // 根据区域获取对应线路数据（这里假设不同区域对应不同JSON，需根据实际调整）
+    let routeUrl = ''
+    switch (region) {
+      case '东':
+        routeUrl = '/routes/1.json' // 东部对应1.json
+        break
+      case '中':
+        routeUrl = '/routes/2.json' // 中部对应2.json
+        break
+      case '西':
+        routeUrl = '/routes/3.json' // 西部对应3.json
+        break
+      default:
+        routeUrl = '/routes/1.json' // 默认值
+    }
+
+    // 请求新的线路数据
+    const res = await fetch(routeUrl)
+    if (!res.ok) throw new Error(`请求失败: ${res.status}`)
+    const route = await res.json() // 更新全局route变量
+
+    // 根据新的route数据重新生成线路配置（使用区域对应的ID，如"东"对应1，"中"对应2）
+    const routeId = regionOptions.indexOf(region) + 1 // 假设ID与区域索引对应（1/2/3）
+    const seriesRoute = generateSeriesRoute(route, routeId)
+
+    // 更新当前区域并刷新图表
+    currentRegion.value = region
+    console.log(`切换到区域: ${region}`)
+
+    // 确保图表实例存在，再更新配置
+    if (chart && chart.setOption) {
+      chart.setOption({
+        series: [...seriesRoute]
+      })
+    } else {
+      console.warn('图表实例不存在，无法更新配置')
+    }
+
+  } catch (error) {
+    console.error(`区域${region}数据更新失败:`, error)
+    // 可添加用户提示，例如：currentRegion.value = '数据加载失败'
+  }
+  await loadAttractionsData(region)
+}
+onBeforeUnmount(() => {
+  if (chart) {
+    chart.dispose()
+    chart = null
+  }
+  window.removeEventListener('resize', () => chart?.resize())
 })
 </script>
 
 <style scoped>
+/* 新增：主内容区域样式，实现左右布局 */
+.main-content {
+  padding: 32px 0;
+  background-color: #206864;
+}
+
+.main-content .container {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* 调整地图区域宽度 */
+.map-section {
+  padding: 0;
+  flex: 1; /* 占1份宽度 */
+  background-color: transparent;
+}
+
+/* 调整景点区域宽度 */
+.attractions-section {
+  padding: 0;
+  flex: 1; /* 占1份宽度 */
+  background-color: transparent;
+}
+
+/* 调整景点内容高度以匹配地图 */
+.attractions-content {
+  height: 600px;
+}
+
+/* 响应式设计：在小屏幕上恢复上下布局 */
+@media (max-width: 1024px) {
+  .main-content .container {
+    flex-direction: column;
+    padding: 0; /* 减小容器内边距，增加可用宽度 */
+    gap: 16px; /* 减小上下布局时的间距 */
+  }
+  
+  .attractions-content {
+    height: auto;
+    margin-top: 16px; /* 减小地图与景点区的距离 */
+  }
+  
+  /* 窄屏时地图高度可适当降低，保持比例 */
+  #map-container {
+    height: 400px;
+  }
+  
+  /* 确保景点区域也充分利用宽度 */
+  .attractions-section {
+    width: 100%;
+    padding: 0;
+  }
+}
+@media (max-width: 768px) {
+  #map-container {
+    height: 300px; /* 进一步降低高度，适应手机屏幕 */
+  }
+}
 /* 颜色变量 */
 :root {
   --primary: #2E8B57;
@@ -342,98 +375,15 @@ onBeforeUnmount(() => {
   overflow-x: hidden;
 }
 
-/* 容器样式 */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-/* 导航栏样式 */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 50;
-  background-color: rgba(47, 79, 79, 0.8);
-  backdrop-filter: blur(8px);
-}
-
-.navbar-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.nav-links {
-  display: flex;
-  gap: 24px;
-}
-
-.nav-link {
-  color: var(--white);
-  text-decoration: none;
-  transition: color 300ms ease;
-}
-
-.nav-link:hover {
-  color: var(--accent);
-}
-
-.nav-link.active {
-  color: var(--accent);
-  font-weight: 500;
-}
-
-.menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--white);
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.mobile-menu {
-  display: none;
-  background-color: rgba(47, 79, 79, 0.9);
-  backdrop-filter: blur(8px);
-}
-
-.mobile-menu.show {
-  display: block;
-}
-
-.mobile-menu-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-}
-
-.mobile-nav-link {
-  color: var(--white);
-  text-decoration: none;
-  padding: 8px 0;
-  transition: color 300ms ease;
-}
-
-.mobile-nav-link:hover {
-  color: var(--accent);
-}
-
-.mobile-nav-link.active {
-  color: var(--accent);
-  font-weight: 500;
-}
-
 /* 页面标题样式 */
 .page-header {
-  padding-top: 128px;
+  padding-top: 20px;
   padding-bottom: 64px;
   text-align: center;
   background-color: #206864;
@@ -480,7 +430,7 @@ onBeforeUnmount(() => {
   border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
-  color: var(--white);
+  color: white;
   cursor: pointer;
   transition: all 300ms ease;
   transform: translateY(0);
@@ -492,11 +442,13 @@ onBeforeUnmount(() => {
 .route-btn.active {
   background: linear-gradient(to right, var(--primary), var(--accent));
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
 .route-btn.inactive {
   background: linear-gradient(to right, rgba(46, 139, 87, 0.8), rgba(143, 188, 143, 0.8));
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: white;
 }
 
 .route-btn:hover {
@@ -512,154 +464,22 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.route-content {
-  display: none;
-}
-
-.route-content.active {
-  display: block;
-}
-
-.route-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.map-container {
-  width: 100%;
-}
-
-.map-box {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.map-svg {
-  width: 100%;
-  height: auto;
-}
-
-.detail-container {
-  width: 100%;
-}
-
-.detail-box {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.route-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--white);
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-}
-
-.route-title i {
-  margin-right: 12px;
-  color: var(--primary);
-}
-
-.route-title.secondary i {
-  color: var(--secondary);
-}
-
-.route-title.accent i {
-  color: var(--accent);
-}
-
-.title-divider {
-  width: 80px;
-  height: 4px;
-  background-color: var(--primary);
-  margin-bottom: 24px;
-}
-
-.title-divider.secondary {
-  background-color: var(--secondary);
-}
-
-.title-divider.accent {
-  background-color: var(--accent);
-}
-
-.route-description {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--gray-700);
-  margin-bottom: 32px;
-}
-
-.city-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.city-item {
-  border-left: 4px solid var(--primary);
-  padding-left: 16px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.city-list.secondary .city-item {
-  border-left-color: var(--secondary);
-}
-
-.city-list.accent .city-item {
-  border-left-color: var(--accent);
-}
-
-.city-name {
-  font-weight: bold;
-  color: var(--white);
-  margin-bottom: 4px;
-}
-
-.city-desc {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* 动画效果 */
-@keyframes dash {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.route-line {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: dash 3s linear forwards;
-}
-
-.scale-up {
-  transition: transform 300ms ease;
-}
-
-.scale-up:hover {
-  transform: scale(1.05);
+/* #map-container {
+  margin: 0 auto;
+  max-width: 1200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+} */
+#map-container {
+  width: 105% !important; /* 适当增大宽度 */
+  max-width: 105% !important;
+  height: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-  
-  .menu-btn {
-    display: block;
-  }
-  
   .route-buttons {
     flex-direction: column;
     align-items: center;
@@ -669,15 +489,190 @@ onBeforeUnmount(() => {
     max-width: 100%;
   }
 }
+/* 新增景点区域样式 */
+.attractions-section {
+  padding: 64px 0;
+  background-color: #8FBC8F;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
 
-@media (min-width: 1024px) {
-  .route-content-wrapper {
-    flex-direction: row;
+.attractions-content {
+  display: flex;
+  gap: 40px;
+  position: relative;
+}
+
+/* 导航竖线样式 */
+.navigation-line {
+  position: relative;
+  width: 40px;
+  height: 600px;
+  margin: 0 20px;
+}
+
+.navigation-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 13px;
+  width: 2px;
+  height: 100%;
+  background-color: #2E8B57;
+}
+
+.nav-point {
+  position: absolute;
+  left: 70%;
+  transform: translateX(-30%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid #2E8B57;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.nav-point.active {
+  background-color: #2E8B57;
+  transform: translateX(-50%) scale(1.2);
+}
+
+.point-number {
+  color: #2E8B57;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.nav-point.active .point-number {
+  color: white;
+}
+
+/* 景点详情样式 */
+.detail-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* 改为垂直排列 */
+  gap: 20px; /* 调整上下间距 */
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.attraction-image {
+  width: 100%; /* 图片占满宽度 */
+  height: 300px; /* 适当调整图片高度 */
+  object-fit: cover;
+}
+
+.attraction-info {
+  width: 100%; /* 文字区域占满宽度 */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.attraction-name {
+  font-size: 28px;
+  color: #2E8B57;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.attraction-description {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* 过渡动画 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .attractions-content {
+    flex-direction: column;
   }
   
-  .map-container,
-  .detail-container {
-    width: 50%;
+  .navigation-line {
+    width: 100%;
+    height: 40px;
+    margin-right: 0;
+    margin-bottom: 30px;
+  }
+  
+  .navigation-line::before {
+    top: 19px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+  }
+  
+  .nav-point {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+  
+  .nav-point.active {
+    transform: translateY(-50%) scale(1.2);
+  }
+  
+  .detail-item {
+    flex-direction: column;
+  }
+  
+  /* .attraction-image, .attraction-info {
+    width: 100%;
+  } */
+  .attraction-image {
+    height: 200px; /* 小屏幕调整图片高度 */
+  }
+  .attraction-details {
+    height: auto;
   }
 }
 </style>
+<!-- <style scoped>
+.region-switch {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.region-switch button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.region-switch button.active {
+  background: #1890ff;
+  color: white;
+  border-color: #1890ff;
+}
+
+#map-container {
+  margin: 0 auto;
+  max-width: 1200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+</style> -->

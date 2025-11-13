@@ -1,5 +1,7 @@
 <template>
   <div class="challenge-container">
+    <!-- 顶部绿色条 -->
+    <div class="top-green-bar"></div>
     <!-- 背景层 - 水墨山水景观 -->
     <div class="background-layer">
       <!-- 动态山脉 -->
@@ -295,6 +297,18 @@ onMounted(loadQuestions)
   flex-direction: column;
 }
 
+/* 顶部绿色条 */
+.top-green-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(135deg, #6BA8A8, #7EB3B3);
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(107, 168, 168, 0.2);
+}
+
 /* ===================== 背景层 ===================== */
 .background-layer {
   position: fixed;
@@ -378,7 +392,7 @@ onMounted(loadQuestions)
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 100px 20px 40px;
   min-height: 100vh;
 }
 
